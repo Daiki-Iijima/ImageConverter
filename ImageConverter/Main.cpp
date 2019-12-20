@@ -165,19 +165,33 @@ void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int
 	}
 
 	int f = 0;
-	int padding = width % 4;
+	int padding = (4 - width * (24 / 8) % 4) % 4;
 
+	printf("パディング%d", padding);
 	for (int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width * 3 + padding; j++)
 		{
 			ifs.get(temp);
 
-			if (j > width * 3 - padding)
+			if (padding == 3)
 			{
-				ofs << (char)0;
-				continue;
+				if (j > width * 3 - padding + 2)
+				{
+					ofs << (char)0;
+					continue;
+				}
 			}
+			else
+			{
+				if (j > width * 3 - padding)
+				{
+					ofs << (char)0;
+					continue;
+				}
+			}
+
+
 
 			rgb[f] = temp;
 			f++;
@@ -186,45 +200,16 @@ void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int
 				f = 0;
 
 				if (rgb[0] == -1 && rgb[1] == -1 && rgb[2] == -1) {//もし指定色なら
-					rgb[0] = 0;    //B
-					rgb[1] = -1;    //G
-					rgb[2] = -1;    //R
+					rgb[0] = -1;    //B
+					rgb[1] = 0;   //G
+					rgb[2] = -1;   //R
 				}
 				ofs << rgb[0] << rgb[1] << rgb[2];
 			}
-			
+
 		}
-		
+
 	}
-
-	//while (ifs.get(temp)) {     //後はファイル終了まで繰り返し
-
-
-	//	
-
-	//	
-	//	widthCount++;
-	//	if (widthCount > width + padding)
-	//	{
-	//		widthCount = 0;
-	//		for (int j = 0; j < padding; j++)
-	//		{
-	//			paddingCount++;
-	//			char data = -1;
-	//			ofs << data;
-	//			if (paddingCount == padding)
-	//			{
-	//				i = 0;
-	//				paddingCount = 0;
-	//			}
-	//		}
-	//	}
-
-	//	
-	//	
-
-	//	
-	//}
 }
 
 int main()
