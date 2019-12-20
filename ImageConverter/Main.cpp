@@ -28,6 +28,9 @@ int HexCharToInt(char* _char)
 	return octInt;
 }
 
+int width;
+int height;
+
 //	INFOHEADERの情報を表示
 //	TODO : 取得できるようにするのもいいかも
 bool LoadInfoData(string _filename)
@@ -77,7 +80,7 @@ bool LoadInfoData(string _filename)
 		if (i >= 22 && i <= 25)		//	画像の高さ
 			tempHeight[i - 22] = temp;
 
-		if(i >= 26 && i <= 27)		//	画像の高さ
+		if (i >= 26 && i <= 27)		//	画像の高さ
 			tempPlaneCount[i - 26] = temp;
 
 		if (i >= 28 && i <= 29)		//	画素数
@@ -104,11 +107,13 @@ bool LoadInfoData(string _filename)
 
 	printf("フォーマット : %c%c\n", tempFormat[0], tempFormat[1]);				//	ファイル形式
 
-	int width = HexCharToInt((char*)tempWidth);									// ファイル横サイズ
-	printf("幅 : %d\n", width);
+	int _width = HexCharToInt((char*)tempWidth);									// ファイル横サイズ
+	width = _width;
+	printf("幅 : %d\n", _width);
 
-	int height = HexCharToInt((char*)tempHeight);								// ファイル縦サイズ
-	printf("高さ : %d\n", height);
+	int _height = HexCharToInt((char*)tempHeight);								// ファイル縦サイズ
+	height = _height;
+	printf("高さ : %d\n", _height);
 
 	int size = HexCharToInt(tempSize);											// サイズの算出
 	printf("ファイルサイズ : %d\n", size);
@@ -130,7 +135,7 @@ bool LoadInfoData(string _filename)
 
 	int colorCount = HexCharToInt((char*)tempColorCount);						// カラーインデックス数の算出
 	printf("カラーインデックス数 : %d\n", colorCount);
-	
+
 	int importantColorCountmp = HexCharToInt((char*)tempImportantColorCountmp);	// 重要インデックス数
 	printf("重要インデックス数 : %d\n", importantColorCountmp);
 
@@ -138,7 +143,7 @@ bool LoadInfoData(string _filename)
 }
 
 
-void ChangeColor(string _filename,int _r,int _g,int _b,int _cr, int _cg, int _cb)
+void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int _cb)
 {
 	ifstream ifs(_filename, ios::binary);//	バイナリ形式で読み取り
 
@@ -159,40 +164,86 @@ void ChangeColor(string _filename,int _r,int _g,int _b,int _cr, int _cg, int _cb
 		ofs << temp;	//	アウトプットストリームにそのまま書き込む
 	}
 
-	int i = 0;
-	while (ifs.get(temp)) {     //後はファイル終了まで繰り返し
-		rgb[i] = temp;
-		i++;
-		if (i == 3) {
-			i = 0;
-			
-			if (rgb[0] == -1 && rgb[1] == -1 && rgb[2] == 0 ) {//もし指定色なら
-				rgb[0] = 0;    //B
-				rgb[1] = -1;    //G
-				rgb[2] = -1;    //R
+	int f = 0;
+	int padding = width % 4;
+
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width * 3 + padding; j++)
+		{
+			ifs.get(temp);
+
+			if (j > width * 3 - padding)
+			{
+				ofs << (char)0;
+				continue;
 			}
-			ofs << rgb[0] << rgb[1] << rgb[2];
+
+			rgb[f] = temp;
+			f++;
+
+			if (f == 3) {
+				f = 0;
+
+				if (rgb[0] == -1 && rgb[1] == -1 && rgb[2] == -1) {//もし指定色なら
+					rgb[0] = 0;    //B
+					rgb[1] = -1;    //G
+					rgb[2] = -1;    //R
+				}
+				ofs << rgb[0] << rgb[1] << rgb[2];
+			}
+			
 		}
+		
 	}
+
+	//while (ifs.get(temp)) {     //後はファイル終了まで繰り返し
+
+
+	//	
+
+	//	
+	//	widthCount++;
+	//	if (widthCount > width + padding)
+	//	{
+	//		widthCount = 0;
+	//		for (int j = 0; j < padding; j++)
+	//		{
+	//			paddingCount++;
+	//			char data = -1;
+	//			ofs << data;
+	//			if (paddingCount == padding)
+	//			{
+	//				i = 0;
+	//				paddingCount = 0;
+	//			}
+	//		}
+	//	}
+
+	//	
+	//	
+
+	//	
+	//}
 }
 
 int main()
 {
 	TitleDraw();	//	タイトル画面
 	cout << "ファイル名を入力してください" << endl;
-	string _filename = "water.bmp";
+	string _filename = "sa.bmp";
 	//cin >> _filename;
 
 	if (LoadInfoData(_filename))//	画像情報
 	{
 		cout << "============================" << endl;
-		getchar();
+		//getchar();
 	}
 	else
 	{
 		cout << "読み取りに失敗しました" << endl;
-		
-		getchar();
+
+		//getchar();
 	}
 
 	cout << "変更したい色を指定してください" << endl;
