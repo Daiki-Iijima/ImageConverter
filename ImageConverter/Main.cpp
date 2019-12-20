@@ -165,10 +165,11 @@ void ChangeColor(string _filename,int _r,int _g,int _b,int _cr, int _cg, int _cb
 		i++;
 		if (i == 3) {
 			i = 0;
-			if (rgb[0] == _r && rgb[1] == _g && rgb[2] == _b) {//もし指定色なら
-				rgb[0] = _cr;    //B
-				rgb[1] = _cg;    //G
-				rgb[2] = _cb;    //R
+			
+			if (rgb[0] == -1 && rgb[1] == -1 && rgb[2] == 0 ) {//もし指定色なら
+				rgb[0] = 0;    //B
+				rgb[1] = -1;    //G
+				rgb[2] = -1;    //R
 			}
 			ofs << rgb[0] << rgb[1] << rgb[2];
 		}
@@ -179,8 +180,8 @@ int main()
 {
 	TitleDraw();	//	タイトル画面
 	cout << "ファイル名を入力してください" << endl;
-	string _filename;
-	cin >> _filename;
+	string _filename = "water.bmp";
+	//cin >> _filename;
 
 	if (LoadInfoData(_filename))//	画像情報
 	{
@@ -190,12 +191,13 @@ int main()
 	else
 	{
 		cout << "読み取りに失敗しました" << endl;
+		
 		getchar();
 	}
 
 	cout << "変更したい色を指定してください" << endl;
 
-	ChangeColor(_filename, -1, -1, -1, 1, 1, 1);
+	ChangeColor(_filename, -1, -1, -1, 0xff, 0x96, 0x55);
 
 	getchar();
 	return 0;
