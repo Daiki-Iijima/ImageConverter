@@ -105,69 +105,68 @@ bool LoadInfoData(string _filename)
 			tempImportantColorCountmp[i - 50] = temp;
 	}
 
-	printf("フォーマット : %c%c\n", tempFormat[0], tempFormat[1]);				//	ファイル形式
+	printf("フォーマット : %c%c\n", tempFormat[0], tempFormat[1]);				    // ファイル形式
 
 	int _width = HexCharToInt((char*)tempWidth);									// ファイル横サイズ
 	width = _width;
 	printf("幅 : %d\n", _width);
 
-	int _height = HexCharToInt((char*)tempHeight);								// ファイル縦サイズ
+	int _height = HexCharToInt((char*)tempHeight);								    // ファイル縦サイズ
 	height = _height;
 	printf("高さ : %d\n", _height);
 
-	int size = HexCharToInt(tempSize);											// サイズの算出
+	int size = HexCharToInt(tempSize);											    // サイズの算出
 	printf("ファイルサイズ : %d\n", size);
 
-	printf("プレーン数 : %d\n", tempPlaneCount[0]);								// プレーン数の算出
+	printf("プレーン数 : %d\n", tempPlaneCount[0]);								    // プレーン数の算出
 
-	printf("ピクセル深度 : %d\n", tempPixelCount[0]);							// 画素数の算出
+	printf("ピクセル深度 : %d\n", tempPixelCount[0]);							    // 画素数の算出
 
-	printf("圧縮形式 : %d\n", tempCompressionFormat[0]);						// 圧縮形式の算出
+	printf("圧縮形式 : %d\n", tempCompressionFormat[0]);						    // 圧縮形式の算出
 
-	int compressionSize = HexCharToInt((char*)tempCompressionSize);				// 圧縮サイズの算出
+	int compressionSize = HexCharToInt((char*)tempCompressionSize);				    // 圧縮サイズの算出
 	printf("圧縮サイズ : %d\n", compressionSize);
 
-	int horizontalCompression = HexCharToInt((char*)tempHorizontalCompression);	// 水平解像度の算出
+	int horizontalCompression = HexCharToInt((char*)tempHorizontalCompression);	    // 水平解像度の算出
 	printf("水平解像度 : %d\n", horizontalCompression);
 
-	int verticalCompression = HexCharToInt((char*)tempVerticalCompression);		// 垂直解像度の算出
+	int verticalCompression = HexCharToInt((char*)tempVerticalCompression);		    // 垂直解像度の算出
 	printf("垂直解像度 : %d\n", verticalCompression);
 
-	int colorCount = HexCharToInt((char*)tempColorCount);						// カラーインデックス数の算出
+	int colorCount = HexCharToInt((char*)tempColorCount);						    // カラーインデックス数の算出
 	printf("カラーインデックス数 : %d\n", colorCount);
 
-	int importantColorCountmp = HexCharToInt((char*)tempImportantColorCountmp);	// 重要インデックス数
+	int importantColorCountmp = HexCharToInt((char*)tempImportantColorCountmp);	    // 重要インデックス数
 	printf("重要インデックス数 : %d\n", importantColorCountmp);
 
 	return true;
 }
 
 
-void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int _cb)
+void ChangeColor(string _filename, char _r, char _g, char _b, char _cr, char _cg, char _cb)
 {
-	ifstream ifs(_filename, ios::binary);//	バイナリ形式で読み取り
+	ifstream ifs(_filename, ios::binary);                                           //	バイナリ形式で読み取り
 
 	_filename.insert(_filename.size() - 4, "new");
-	ofstream ofs(_filename.c_str(), ios::binary);		//	バイナリ形式で書き出し
+	ofstream ofs(_filename.c_str(), ios::binary);		                            //	バイナリ形式で書き出し
 
-	if (!ofs) {        //ターゲットファイルが開けなかったら終了
+	if (!ofs) {                                                                     //ターゲットファイルが開けなかったら終了
 		cout << "file open error" << endl;
 	}
 
 	char temp;
 	char rgb[4];
 
-	//	ヘッダ部:54byte
-	for (int i = 0; i < 54; i++)		//	BITMAPFILEHEADER(ヘッダー情報)と、BITMAPINFOHEADER()をコピー
+	                                                                                //	ヘッダ部:54byte
+	for (int i = 0; i < 54; i++)		                                            //	BITMAPFILEHEADER(ヘッダー情報)と、BITMAPINFOHEADER()をコピー
 	{
 		ifs.get(temp);
-		ofs << temp;	//	アウトプットストリームにそのまま書き込む
+		ofs << temp;	                                                            //	アウトプットストリームにそのまま書き込む
 	}
 
 	int f = 0;
 	int padding = (4 - width * (24 / 8) % 4) % 4;
 
-	printf("パディング%d", padding);
 	for (int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width * 3 + padding; j++)
@@ -191,18 +190,16 @@ void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int
 				}
 			}
 
-
-
 			rgb[f] = temp;
 			f++;
 
 			if (f == 3) {
 				f = 0;
 
-				if (rgb[0] == -1 && rgb[1] == -1 && rgb[2] == -1) {//もし指定色なら
-					rgb[0] = -1;    //B
-					rgb[1] = 0;   //G
-					rgb[2] = -1;   //R
+				if (rgb[0] == _b && rgb[1] == _g && rgb[2] == _r) {                 //もし指定色なら
+					rgb[0] = _cb;                                                   //B
+					rgb[1] = _cg;                                                   //G
+					rgb[2] = _cr;                                                   //R
 				}
 				ofs << rgb[0] << rgb[1] << rgb[2];
 			}
@@ -214,27 +211,36 @@ void ChangeColor(string _filename, int _r, int _g, int _b, int _cr, int _cg, int
 
 int main()
 {
-	TitleDraw();	//	タイトル画面
+	TitleDraw();	                                                                //	タイトル画面
 	cout << "ファイル名を入力してください" << endl;
-	string _filename = "sa.bmp";
-	//cin >> _filename;
+	string _filename;
+	cin >> _filename;
 
-	if (LoadInfoData(_filename))//	画像情報
+	if (LoadInfoData(_filename))                                                    //	画像情報
 	{
 		cout << "============================" << endl;
-		//getchar();
+		getchar();
 	}
 	else
 	{
 		cout << "読み取りに失敗しました" << endl;
 
-		//getchar();
+		getchar();
 	}
 
-	cout << "変更したい色を指定してください" << endl;
+	int targetColors[3];
+	int changeColors[3];
 
-	ChangeColor(_filename, -1, -1, -1, 0xff, 0x96, 0x55);
+	cout << "変更したい色を指定してください(例:(RGB)255 255 255)" << endl;
+
+	cin >> targetColors[0] >> targetColors[1]>> targetColors[2];
+	cin >> changeColors[0] >> changeColors[1] >> changeColors[2];
+
+	ChangeColor(_filename, 
+		targetColors[0], targetColors[1], targetColors[2],		//	変更したい対象の色
+		changeColors[0], changeColors[1], changeColors[2]);		//	変更後の色
 
 	getchar();
+
 	return 0;
 }
