@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <string>		//	文字列を扱う
 #include <fstream>		//	ファイルの入出力用
-
+#include <Windows.h>
 using namespace std;
 
 void TitleDraw()
@@ -143,12 +143,11 @@ bool LoadInfoData(string _filename)
 }
 
 
-void ChangeColor(string _filename, char _r, char _g, char _b, char _cr, char _cg, char _cb)
+void ChangeColor(string _filename, string _outFileName, char _r, char _g, char _b, char _cr, char _cg, char _cb)
 {
 	ifstream ifs(_filename, ios::binary);                                           //	バイナリ形式で読み取り
 
-	_filename.insert(_filename.size() - 4, "new");
-	ofstream ofs(_filename.c_str(), ios::binary);		                            //	バイナリ形式で書き出し
+	ofstream ofs(_outFileName.c_str(), ios::binary);		                        //	バイナリ形式で書き出し
 
 	if (!ofs) {                                                                     //ターゲットファイルが開けなかったら終了
 		cout << "file open error" << endl;
@@ -157,7 +156,7 @@ void ChangeColor(string _filename, char _r, char _g, char _b, char _cr, char _cg
 	char temp;
 	char rgb[4];
 
-	                                                                                //	ヘッダ部:54byte
+	//	ヘッダ部:54byte
 	for (int i = 0; i < 54; i++)		                                            //	BITMAPFILEHEADER(ヘッダー情報)と、BITMAPINFOHEADER()をコピー
 	{
 		ifs.get(temp);
@@ -211,6 +210,7 @@ void ChangeColor(string _filename, char _r, char _g, char _b, char _cr, char _cg
 
 int main()
 {
+
 	TitleDraw();	                                                                //	タイトル画面
 	cout << "ファイル名を入力してください" << endl;
 	string _filename;
@@ -228,19 +228,27 @@ int main()
 		getchar();
 	}
 
+	cout << "出力する画像ファイル名を指定してください" << endl;
+
+	string _outFilename;
+	cin >> _outFilename;
+
 	int targetColors[3];
 	int changeColors[3];
 
 	cout << "変更したい色を指定してください(例:(RGB)255 255 255)" << endl;
 
-	cin >> targetColors[0] >> targetColors[1]>> targetColors[2];
+	cin >> targetColors[0] >> targetColors[1] >> targetColors[2];
 	cin >> changeColors[0] >> changeColors[1] >> changeColors[2];
 
-	ChangeColor(_filename, 
+	ChangeColor(_filename, _outFilename,
 		targetColors[0], targetColors[1], targetColors[2],		//	変更したい対象の色
 		changeColors[0], changeColors[1], changeColors[2]);		//	変更後の色
 
-	getchar();
+	cout << "変更完了しました" << endl;
 
+	ShellExecute(NULL, NULL, "D:\\Git_ws\\ImageConverter\\ImageConverter\\Images\\testnew.bmp", NULL, NULL, SW_SHOW);
+	getchar();
+	getchar();
 	return 0;
 }
