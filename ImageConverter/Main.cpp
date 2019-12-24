@@ -4,6 +4,41 @@
 #include <Windows.h>
 using namespace std;
 
+int width;
+int height;
+
+enum FILE_FORMAT
+{
+	NONE,
+	BMP,
+	PNG,
+	GIF,
+	JPEG,
+};
+
+FILE_FORMAT CheckFormat()
+{
+	FILE_FORMAT retFileFormat;
+
+	switch (retFileFormat)
+	{
+	case NONE:
+		break;
+	case BMP:
+		break;
+	case PNG:
+		break;
+	case GIF:
+		break;
+	case JPEG:
+		break;
+	default:
+		break;
+	}
+
+	return retFileFormat;
+}
+
 void TitleDraw()
 {
 	printf("                   ___                               ____                          _            \n"
@@ -27,9 +62,6 @@ int HexCharToInt(char* _char)
 
 	return octInt;
 }
-
-int width;
-int height;
 
 //	INFOHEADERの情報を表示
 //	TODO : 取得できるようにするのもいいかも
@@ -142,7 +174,6 @@ bool LoadInfoData(string _filename)
 	return true;
 }
 
-
 void ChangeColor(string _filename, string _outFileName, char _r, char _g, char _b, char _cr, char _cg, char _cb)
 {
 	ifstream ifs(_filename, ios::binary);                                           //	バイナリ形式で読み取り
@@ -151,6 +182,7 @@ void ChangeColor(string _filename, string _outFileName, char _r, char _g, char _
 
 	if (!ofs) {                                                                     //ターゲットファイルが開けなかったら終了
 		cout << "file open error" << endl;
+		return;
 	}
 
 	char temp;
@@ -207,6 +239,16 @@ void ChangeColor(string _filename, string _outFileName, char _r, char _g, char _
 
 	}
 }
+char* GetDirectory(char* _outFilename)
+{
+	char cdir[255];
+	GetCurrentDirectory(255, cdir);
+
+	strcat_s(cdir, "\\");
+	strcat_s(cdir, _outFilename);
+
+	return cdir;
+}
 
 int main()
 {
@@ -215,6 +257,7 @@ int main()
 	cout << "ファイル名を入力してください" << endl;
 	string _filename;
 	cin >> _filename;
+
 
 	if (LoadInfoData(_filename))                                                    //	画像情報
 	{
@@ -233,6 +276,9 @@ int main()
 	string _outFilename;
 	cin >> _outFilename;
 
+
+	cout << GetDirectory((char*)_outFilename.c_str()) << endl;
+
 	int targetColors[3];
 	int changeColors[3];
 
@@ -247,7 +293,7 @@ int main()
 
 	cout << "変更完了しました" << endl;
 
-	ShellExecute(NULL, NULL, "D:\\Git_ws\\ImageConverter\\ImageConverter\\Images\\testnew.bmp", NULL, NULL, SW_SHOW);
+	ShellExecute(NULL, NULL, GetDirectory((char*)_outFilename.c_str()), NULL, NULL, SW_SHOW);
 	getchar();
 	getchar();
 	return 0;
