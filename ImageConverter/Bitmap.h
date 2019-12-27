@@ -23,9 +23,10 @@ public:
 
 	BitmapInfo bitmapInfo;
 	std::string fileName;
-
+	Bitmap(std::string _fileName);
 	void SetFileName(std::string _fileName);
-
+	int HexCharToInt(char* _char);
+	void ChangeColor(std::string _outFileName, char _r, char _g, char _b, char _cr, char _cg, char _cb);
 	bool GetBitmapInfo();
 };
 

@@ -6,9 +6,6 @@
 #include "Bitmap.h"
 using namespace std;
 
-int width;
-int height;
-
 enum FILE_FORMAT
 {
 	NONE,
@@ -21,7 +18,6 @@ enum FILE_FORMAT
 FILE_FORMAT CheckFormat()
 {
 	FILE_FORMAT retFileFormat = NONE;
-
 
 	return retFileFormat;
 }
@@ -37,85 +33,8 @@ void TitleDraw()
 
 }
 
-int HexCharToInt(char* _char)
-{
-	string hexStr(_char, sizeof(_char) / sizeof(_char[0]));	//	16進でサイズが入る
-
-	char hexChar[100];
-
-	sprintf_s(hexChar, "%x", hexStr);						//	16進のchar配列型に変換
-
-	int octInt = std::stoi(hexChar, nullptr, 16);			// 16進を10進に変換してint型に代入
-
-	return octInt;
-}
 
 
-void ChangeColor(string _filename, string _outFileName, char _r, char _g, char _b, char _cr, char _cg, char _cb)
-{
-	ifstream ifs(_filename, ios::binary);                                           //	バイナリ形式で読み取り
-
-	ofstream ofs(_outFileName.c_str(), ios::binary);		                        //	バイナリ形式で書き出し
-
-	if (!ofs) {                                                                     //ターゲットファイルが開けなかったら終了
-		cout << "file open error" << endl;
-		return;
-	}
-
-	char temp;
-	char rgb[4];
-
-	//	ヘッダ部:54byte
-	for (int i = 0; i < 54; i++)		                                            //	BITMAPFILEHEADER(ヘッダー情報)と、BITMAPINFOHEADER()をコピー
-	{
-		ifs.get(temp);
-		ofs << temp;	                                                            //	アウトプットストリームにそのまま書き込む
-	}
-
-	int f = 0;
-	int padding = (4 - width * (24 / 8) % 4) % 4;
-
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < width * 3 + padding; j++)
-		{
-			ifs.get(temp);
-
-			if (padding == 3)
-			{
-				if (j > width * 3 - padding + 2)
-				{
-					ofs << (char)0;
-					continue;
-				}
-			}
-			else
-			{
-				if (j > width * 3 - padding)
-				{
-					ofs << (char)0;
-					continue;
-				}
-			}
-
-			rgb[f] = temp;
-			f++;
-
-			if (f == 3) {
-				f = 0;
-
-				if (rgb[0] == _b && rgb[1] == _g && rgb[2] == _r) {                 //もし指定色なら
-					rgb[0] = _cb;                                                   //B
-					rgb[1] = _cg;                                                   //G
-					rgb[2] = _cr;                                                   //R
-				}
-				ofs << rgb[0] << rgb[1] << rgb[2];
-			}
-
-		}
-
-	}
-}
 char* GetDirectory(char* _outFilename)
 {
 	char cdir[255];
@@ -129,29 +48,29 @@ char* GetDirectory(char* _outFilename)
 
 int main()
 {
-
 	TitleDraw();	                                                                //	タイトル画面
-	cout << "ファイル名を入力してください" << endl;
+
+	cout << "読み取るファイル名を入力してください" << endl;
+
 	string _filename;
 	cin >> _filename;
 
-	Bitmap bitmap;
+	if (_filename.find(".bmp") != std::string::npos) {
+		cout << "bitmapです" << endl;
+	}
 
-	bitmap.SetFileName(_filename);
+	Bitmap bitmap(_filename);														//	ファイル名を設定する
 
 
 
-	if (bitmap.GetBitmapInfo())                                                   //	画像情報
+	if (bitmap.GetBitmapInfo())														//	画像情報
 	{
 		cout << "=== 読み取り成功 === " << endl;
 		getchar();
 	}
 	else
 	{
-		cout << "読み取りに失敗しました" << endl;
-
-		getchar();
-
+		cout << "読み取りに失敗" << endl;
 		return 0;
 	}
 
@@ -159,7 +78,6 @@ int main()
 
 	string _outFilename;
 	cin >> _outFilename;
-
 
 	cout << GetDirectory((char*)_outFilename.c_str()) << endl;
 
@@ -171,14 +89,16 @@ int main()
 	cin >> targetColors[0] >> targetColors[1] >> targetColors[2];
 	cin >> changeColors[0] >> changeColors[1] >> changeColors[2];
 
-	ChangeColor(_filename, _outFilename,
+	bitmap.ChangeColor(
+		_outFilename,											//	出力するファイル名
 		targetColors[0], targetColors[1], targetColors[2],		//	変更したい対象の色
 		changeColors[0], changeColors[1], changeColors[2]);		//	変更後の色
 
 	cout << "変更完了しました" << endl;
 
+	//	ファイルを開く
 	ShellExecute(NULL, NULL, GetDirectory((char*)_outFilename.c_str()), NULL, NULL, SW_SHOW);
-	getchar();
-	getchar();
+
+
 	return 0;
 }
