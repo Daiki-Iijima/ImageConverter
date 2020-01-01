@@ -116,11 +116,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BitFlag.cpp" />
     <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="Gif.cpp" />
+    <ClCompile Include="ImageColorConvert.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitFlag.h" />
     <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="Gif.h" />
+    <ClInclude Include="ImageColorConvert.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
