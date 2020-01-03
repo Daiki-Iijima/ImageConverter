@@ -1,5 +1,6 @@
 #include "Gif.h"
-
+#include <bitset>
+#include <iostream>
 #include <string>
 #include <fstream>		//	ファイルの入出力用
 #include "BitFlag.h"
@@ -48,7 +49,6 @@ bool LoadGifInfo()
 		if (i >= 10 && i <= 10)
 		{
 			unsigned char flags = (int)temp & 0xff;
-			printf("%x\n", flags);
 
 			if ((flags & BIT_FLAG1) != 0)
 				gifInfo.Global_Color_Table_Flag[0] = 1;
