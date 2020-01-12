@@ -2,6 +2,8 @@
 #include <bitset>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <math.h>
 #include <fstream>		//	ファイルの入出力用
 #include "BitFlag.h"
 
@@ -9,6 +11,8 @@ using namespace std;
 
 GifInfo gifInfo;
 std::string gifFileName;
+
+vector<vector<unsigned int>> ColorTable(1000, vector<unsigned int>(3, 0));
 
 void GifInit(std::string _fileName)
 {
@@ -64,11 +68,11 @@ bool LoadGifInfo()
 				gifInfo.Sort_Flag[0] = 1;
 
 			if ((flags & BIT_FLAG32) != 0)
-				gifInfo.Size_of_Global_Color_Table[0] = 1;
+				gifInfo.Size_of_Global_Color_Table += 1;
 			if ((flags & BIT_FLAG64) != 0)
-				gifInfo.Size_of_Global_Color_Table[1] = 1;
+				gifInfo.Size_of_Global_Color_Table += 2;
 			if ((flags & BIT_FLAG128) != 0)
-				gifInfo.Size_of_Global_Color_Table[2] = 1;
+				gifInfo.Size_of_Global_Color_Table += 4;
 		}
 
 		if (i >= 11)
@@ -77,6 +81,33 @@ bool LoadGifInfo()
 			gifInfo.Pixel_Aspect_Ratio[i - 12];
 
 	}
+
+	//	グローバルテーブルの数は
+	//	2の(0～7) + 1乗
+	gifInfo.Size_of_Global_Color_Table += 1;
+	gifInfo.Size_of_Global_Color_Table = pow(2, gifInfo.Size_of_Global_Color_Table);
+
+	int count = 0;
+	for (int i = 0; i < gifInfo.Size_of_Global_Color_Table; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			//cout << ifs.tellg() << endl;
+			ifs.get(temp);
+
+			ColorTable[i][j] = temp & 0xff;
+		}
+
+		cout <<
+			"番号 : " << i << ":\t" <<
+			ColorTable[i][0] << "\t" <<
+			ColorTable[i][1] << "\t" <<
+			ColorTable[i][2] <<
+			endl;
+	}
+
+	//	拡張ブロックがあるかチェック
+
 
 	return true;
 }

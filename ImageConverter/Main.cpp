@@ -116,6 +116,7 @@ int main()
 			return 0;
 		}
 
+
 		GifInfo info = GetGifInfo();
 
 		for (int i = 0; i < sizeof(info.Format); i++)
@@ -161,7 +162,7 @@ int main()
 		printf("\n");
 		for (int i = 0; i < sizeof(info.Size_of_Global_Color_Table); i++)
 		{
-			printf("S:%d", info.Size_of_Global_Color_Table[i]);
+			printf("S:%d", info.Size_of_Global_Color_Table);
 		}
 		printf("\n");
 		for (int i = 0; i < sizeof(info.Background_Color_Index); i++)
